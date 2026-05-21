@@ -357,11 +357,10 @@ class WindMicrogridCore:
                             abs(load_H_actual - self.load_H[idx1])
         cost_load_shift = load_shift_volume * C_LOAD * dt
 
-        # 6.6 残余不平衡惩罚
-        # 正不平衡(失负荷): $2000/MWh (高价紧急购电)
-        # 负不平衡(过发电): $1000/MWh (低价售出, 但仍有一定损失)
+        # 6.6 残余不平衡惩罚 (对称化, 消除过发电偏差)
+        # 对称惩罚避免 agent 系统性偏向过发电 → 多烧煤 → 高碳+弃风
         IMB_PENALTY_POS_PER_MWH = 3000.0
-        IMB_PENALTY_NEG_PER_MWH = 2000.0
+        IMB_PENALTY_NEG_PER_MWH = 3000.0
         pos = max(residual_imbalance, 0.0)
         neg = max(-residual_imbalance, 0.0)
         cost_imbalance = (pos * IMB_PENALTY_POS_PER_MWH + neg * IMB_PENALTY_NEG_PER_MWH) * dt

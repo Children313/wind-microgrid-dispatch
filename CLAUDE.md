@@ -138,7 +138,7 @@ python 05_multi_seed.py --seeds 42,43,44 --steps 200000
 | `02_microgrid_env_v2.py:61` | Gas turbine ramp | 10 MW/step | Reduced from 25 |
 | `02_microgrid_env_v2.py:121` | Carbon price (PSI_2) | $25/t | Increased from 15 |
 | `02_microgrid_env_v2.py:122` | Free carbon allowance (B_C) | 10 t/step | Reduced from 30 |
-| `02_microgrid_env_v2.py:363-364` | Imbalance penalty | $3000/$2000 per MWh | pos (under-gen) / neg (over-gen) |
+| `02_microgrid_env_v2.py:363-364` | Imbalance penalty | $3000/$3000 per MWh | symmetric (no over-gen bias) |
 | `03_train_sac.py:89` | SAC learning rate | 5e-5 | Reduced from 1e-4 for stability |
 | `03_train_sac.py:91` | SAC batch size | 1024 | Increased from 512 |
 | `03_train_sac.py:92` | gamma | 0.995 | Increased from 0.99 |
@@ -157,6 +157,6 @@ python 05_multi_seed.py --seeds 42,43,44 --steps 200000
 
 5. **Wind curtailment must be a real mechanism, not hardcoded to zero** — otherwise "wind utilization" is a meaningless metric.
 
-6. **Asymmetric imbalance penalties ($3000 vs $2000) bias the agent toward over-generation** — which causes excessive genset use, high carbon, and high wind curtailment. If using a pessimistic quantile (like q10) as a feature, this bias is amplified.
+6. **Asymmetric imbalance penalties ($3000 vs $2000) bias the agent toward over-generation** — which causes excessive genset use, high carbon, and high wind curtailment. **Fixed in v2: penalties now symmetric ($3000/$3000).**
 
 7. **Best-model checkpointing is essential** — training reward often degrades in later steps due to catastrophic forgetting. Always save `model.zip` at best mean reward, not just at the end.
