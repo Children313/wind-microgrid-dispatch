@@ -118,10 +118,9 @@ def main():
         'point_cgmamba':  '#9467bd',
         'point_mamba':    '#8c564b',
         'prob_cgprob':    '#d62728',
-        'oracle':         '#2ca02c',
     }
     NAME_ORDER = ['baseline','point_dlinear','point_patchtst',
-                  'point_cgmamba','point_mamba','prob_cgprob','oracle']
+                  'point_cgmamba','point_mamba','prob_cgprob']
     for ax, metric, title in zip(axes, metrics_plot, titles):
         names = [n for n in NAME_ORDER if n in summary['name'].unique()]
         means = [summary[summary['name']==n][metric].mean() for n in names]

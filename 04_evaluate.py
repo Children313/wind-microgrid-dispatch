@@ -1,12 +1,12 @@
 """
 04_evaluate.py
 ==============
-读 6 组训练好的模型, 在 *eval 段* 评估 (out-of-sample!), 出论文用的表和图.
+读 5 组训练好的模型, 在 *eval 段* 评估 (out-of-sample!), 出论文用的表和图.
 
 输出:
   results/seed<S>_summary/
     eval_metrics.csv        每组的完整指标
-    eval_comparison.csv     5 组 vs Baseline 的相对差值
+    eval_comparison.csv     4 组 vs Baseline 的相对差值
     eval_comparison.md      Markdown 表格 (论文 Table 5)
     eval_comparison.png     6 面板对比图
 
@@ -113,7 +113,7 @@ def evaluate(model, env, name, eval_steps=500, seed=43):
 # ====================================================================
 def plot_comparison(metrics_list, train_curves, out_path, algo='SAC'):
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
-    # 颜色: baseline 蓝, point* 暖色系, prob* 红, oracle 绿
+    # 颜色: baseline 蓝, point* 暖色系, prob* 红
     colors = {
         'baseline':       '#1f77b4',
         'point_dlinear':  '#ff7f0e',
@@ -121,7 +121,6 @@ def plot_comparison(metrics_list, train_curves, out_path, algo='SAC'):
         'point_cgmamba':  '#9467bd',
         'point_mamba':    '#8c564b',
         'prob_cgprob':    '#d62728',
-        'oracle':         '#2ca02c',
     }
     names = [m['name'] for m in metrics_list]
 
@@ -218,7 +217,6 @@ def main():
         'baseline',
         'point_dlinear', 'point_patchtst', 'point_cgmamba', 'point_mamba',
         'prob_cgprob',
-        'oracle',
     ]
 
     summary_dir = os.path.join(args.out_root, f"seed{args.seed}_summary")
@@ -277,7 +275,7 @@ def main():
         print(cmp_df.to_string(index=False))
 
         # Markdown 版
-        md = ["# Dispatch Comparison: 6 RL Agents on Wind Microgrid (Paper-Level Env)\n"]
+        md = [f"# Dispatch Comparison: {len(metrics_list)} RL Agents on Wind Microgrid (Paper-Level Env)\n"]
         md.append(f"Algorithm: {args.algo} | Seed: {args.seed} | Eval steps: {args.eval_steps}")
         md.append(f"Eval data: rl_eval.csv (out-of-sample, 严格不重叠 RL 训练数据)\n")
         md.append("## Main Comparison\n")

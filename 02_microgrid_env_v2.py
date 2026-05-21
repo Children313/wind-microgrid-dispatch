@@ -28,7 +28,6 @@
   - point_patchtst     obs=23
   - point_cgmamba      obs=23
   - prob_cgprob        obs=24 (base[12]=预测净负荷 + iw) ⭐ 主推
-  - oracle             obs=23 (base[12]=真实净负荷)
 """
 
 import warnings; warnings.filterwarnings('ignore')
@@ -428,7 +427,6 @@ class WindMicrogridEnv(gym.Env):
       point_patchtst: obs=23 base[12]=预测净负荷, extra[0]=当前风电
       point_cgmamba: obs=23 base[12]=预测净负荷, extra[0]=当前风电
       prob_cgprob:   obs=24 base[12]=预测净负荷, extra=[当前风电, iw不确定性] ⭐
-      oracle:        obs=23 base[12]=真实净负荷, extra[0]=当前风电 (完美上界)
 
     Args:
         agent: SUPPORTED_AGENTS 之一
@@ -468,8 +466,6 @@ class WindMicrogridEnv(gym.Env):
             self.pred_q50 = np.clip(dfp['pred_q50_MW'].values, 0.0, None).astype(np.float32)
             self.pred_iw  = dfp['interval_90_MW'].values.astype(np.float32)
             self.pred_unc = dfp['uncertainty_norm'].values.astype(np.float32)
-        elif agent == 'oracle':
-            self.pred_q50 = true_wind
 
         if agent == 'baseline':
             obs_dim = 22
@@ -477,8 +473,6 @@ class WindMicrogridEnv(gym.Env):
             obs_dim = 23
         elif agent == 'prob_cgprob':
             obs_dim = 24
-        elif agent == 'oracle':
-            obs_dim = 23
         else:
             obs_dim = 22
 
@@ -519,14 +513,6 @@ class WindMicrogridEnv(gym.Env):
             extra = np.array([cur_wind_n, net_load_iw], dtype=np.float32)
             return np.concatenate([base, extra])
 
-        if self.agent == 'oracle':
-            # base[12]=真实净负荷(完美), extra[0]=当前风电(辅助)
-            true_wind_next = float(self.core.true_wind[idx1])
-            true_net_load = np.float32((load_next - true_wind_next) / load_peak)
-            base[12] = true_net_load
-            extra = np.array([cur_wind_n], dtype=np.float32)
-            return np.concatenate([base, extra])
-
         raise ValueError(self.agent)
 
     def reset(self, *, seed=None, options=None):
@@ -544,7 +530,7 @@ class WindMicrogridEnv(gym.Env):
 SUPPORTED_AGENTS = [
     'baseline',
     'point_dlinear', 'point_patchtst', 'point_cgmamba', 'point_mamba',
-    'prob_cgprob', 'oracle',
+    'prob_cgprob',
 ]
 
 

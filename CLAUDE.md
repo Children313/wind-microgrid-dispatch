@@ -8,7 +8,7 @@ Wind power forecasting + microgrid dispatch co-optimization. A **CG-ProbMamba** 
 
 The project has two halves:
 1. **Prediction side**: 8 wind forecast models (CG-ProbMamba, CG-Mamba, Mamba, DLinear, PatchTST, iTransformer, TimeMixer, Autoformer) trained on `15_processed.csv` (43,680 rows, 15-min resolution)
-2. **Dispatch side**: 6 SAC agents sharing the same microgrid physics but receiving different prediction signals — an ablation chain from "no prediction" to "perfect prediction"
+2. **Dispatch side**: 5 SAC agents sharing the same microgrid physics but receiving different prediction signals — an ablation chain from "no prediction" to "probabilistic prediction with uncertainty"
 
 ## Key Architectural Decisions
 
@@ -27,7 +27,11 @@ The critical design choice: **prediction occupies `base[12]`** — the same inde
 | baseline | 22 | current wind (reactive) | — |
 | point_* | 23 | **predicted net load** = (load−q50)/peak | current wind |
 | prob_cgprob | 24 | **predicted net load** (q50) | current wind, iw uncertainty |
-| oracle | 23 | **true net load** (perfect) | current wind |
+
+(An `oracle` agent with `base[12]=true net load` was prototyped but removed: under SAC + 200K steps, the
+unsmoothed true future signal produced noisier learning than the network-smoothed q50, leading to worse
+dispatch performance than the prediction-based agents and making it unsuitable as a "perfect upper bound"
+in this setup. See discussion in lessons-learned below.)
 
 `base[12]` was chosen because that's where `get_baseline_obs()` puts `true_wind[t+1]` (exogenous future data). We overwrite it to prevent data leaks and to force prediction use.
 
@@ -81,7 +85,7 @@ python 01_prepare_data.py --exp_root . --out_dir ./data
 ### Train RL agents
 
 ```powershell
-# All 6 agents (baseline, point_dlinear, point_patchtst, point_cgmamba, prob_cgprob, oracle)
+# All 5 agents (baseline, point_dlinear, point_patchtst, point_cgmamba, prob_cgprob)
 python 03_train_sac.py --agent all --steps 200000 --seed 42
 
 # Single agent
@@ -160,3 +164,5 @@ python 05_multi_seed.py --seeds 42,43,44 --steps 200000
 6. **Asymmetric imbalance penalties ($3000 vs $2000) bias the agent toward over-generation** — which causes excessive genset use, high carbon, and high wind curtailment. If using a pessimistic quantile (like q10) as a feature, this bias is amplified.
 
 7. **Best-model checkpointing is essential** — training reward often degrades in later steps due to catastrophic forgetting. Always save `model.zip` at best mean reward, not just at the end.
+
+8. **A perfect-information "oracle" is not necessarily an upper bound under noisy SAC training** — we prototyped an oracle agent with `base[12]=true_net_load[t+1]` to serve as the dispatch ceiling. Under 200K-step SAC, it converged much slower than agents fed network-smoothed q50 predictions (training reward stuck at ~-20K for the first 100K steps; best ~-4K vs. -2K for prediction agents). The unsmoothed true future signal carries the raw step-to-step volatility of the data, while neural-network point/probabilistic predictions are implicitly low-pass filtered. The smoother signal turns out to be a more RL-friendly observation, so the oracle was removed from the comparison rather than retained as a misleading baseline.

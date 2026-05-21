@@ -1,14 +1,13 @@
 """
 03_train_sac.py
 ===============
-6 组对照 SAC 训练 (你的 GPU 自动检测):
+5 组对照 SAC 训练 (你的 GPU 自动检测):
 
   1. baseline           obs=22 当前风电 (无预测)
   2. point_dlinear      obs=23 当前风电 + q50 (DLinear)
   3. point_patchtst     obs=23 当前风电 + q50 (PatchTST)
   4. point_cgmamba      obs=23 当前风电 + q50 (CG-Mamba)
   5. prob_cgprob        obs=24 base[12]=预测净负荷+iw不确定性 ⭐主推
-  6. oracle             obs=23 当前风电 + true_wind[t+1] (完美预测)
 
 数据使用:
   - 训练时读 data/rl_train.csv + 对应预测 CSV 的 train 段
@@ -167,19 +166,18 @@ def main():
                         help="auto / cuda / cpu")
     parser.add_argument('--out_root', type=str, default='./results')
     parser.add_argument('--skip', type=str, default='',
-                        help="逗号分隔, 例如 'baseline,oracle'")
+                        help="逗号分隔, 例如 'baseline,point_dlinear'")
     args = parser.parse_args()
 
     if args.device == 'auto':
         args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print_device_info(args.device)
 
-    # 默认推荐顺序: 先快的 (baseline, point), 再慢的 (prob, oracle)
+    # 默认推荐顺序: 先快的 (baseline, point), 再慢的 (prob)
     DEFAULT_ORDER = [
         'baseline',
         'point_dlinear', 'point_patchtst', 'point_cgmamba',
         'prob_cgprob',
-        'oracle',
     ]
     if args.agent == 'all':
         agents = DEFAULT_ORDER
