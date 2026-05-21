@@ -1,0 +1,62 @@
+# Model checkpoints (large binary files)
+*.pt
+*.pth
+*.ckpt
+*.zip
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+build.log
+
+# Large generated data (keep only summary CSVs)
+results/*/
+!results/*/seed42_summary/
+results/*/seed42_summary/*.zip
+results_backup*/
+dispatch_pkg/results/
+
+# Raw prediction outputs (large CSVs, regeneratable)
+results_cg_mamba/*.csv
+results_cg_prob_mamba/*.csv
+results_mamba/*.csv
+results_tsl_baselines/*/*.csv
+
+# Data directory CSVs (regeneratable via 01_prepare_data.py)
+data/
+dispatch_pkg/data/
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+
+# Outlier backups
+*.outliers_bak
+
+# Demo/temp files
+demo_data.csv

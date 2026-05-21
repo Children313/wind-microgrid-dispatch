@@ -1,0 +1,18 @@
+[系统] 设备: cuda, 模型: iTransformer
+[划分] predictor=25189, rl_train=8396, rl_test=8398
+[滑窗] predictor_train=22584, val=2509, rl_train=8300, rl_test=8302
+[通道] 6 维 [POWER, WS, WD, TEMP, HUM, PRESSURE]
+[模型] iTransformer 参数量: 410,253
+
+───────────────────────────────────────────────────────
+ 训练 iTransformer (samples: 22584, val: 2509)
+───────────────────────────────────────────────────────
+  Epoch  10/100 | Train: 0.00227 | Val: 0.00178 | LR: 0.00500 | 耗时: 34.2s
+  Epoch  20/100 | Train: 0.00212 | Val: 0.00171 | LR: 0.00500 | 耗时: 65.4s
+  Epoch  30/100 | Train: 0.00202 | Val: 0.00167 | LR: 0.00500 | 耗时: 97.6s
+  Epoch  40/100 | Train: 0.00182 | Val: 0.00167 | LR: 0.00100 | 耗时: 130.7s
+  Epoch  50/100 | Train: 0.00165 | Val: 0.00172 | LR: 0.00020 | 耗时: 165.5s
+  早停于 Epoch 60, 最佳 Val: 0.001666, 耗时: 195.6s
+
+MAE=4934.7 kW, RMSE=7539.9 kW, R²=0.9459
+[输出] 预测 & 模型权重保存到 results_tsl_baselines\iTransformer/

@@ -1,0 +1,16 @@
+[系统] 设备: cuda, 模型: TimeMixer
+[划分] predictor=25189, rl_train=8396, rl_test=8398
+[滑窗] predictor_train=22584, val=2509, rl_train=8300, rl_test=8302
+[通道] 6 维 [POWER, WS, WD, TEMP, HUM, PRESSURE]
+[模型] TimeMixer 参数量: 56,081
+
+───────────────────────────────────────────────────────
+ 训练 TimeMixer (samples: 22584, val: 2509)
+───────────────────────────────────────────────────────
+  Epoch  10/100 | Train: 0.00199 | Val: 0.00212 | LR: 0.00500 | 耗时: 49.5s
+  Epoch  20/100 | Train: 0.00161 | Val: 0.00265 | LR: 0.00100 | 耗时: 99.9s
+  Epoch  30/100 | Train: 0.00146 | Val: 0.00239 | LR: 0.00004 | 耗时: 150.4s
+  早停于 Epoch 33, 最佳 Val: 0.001827, 耗时: 167.2s
+
+MAE=5252.0 kW, RMSE=7803.9 kW, R²=0.9420
+[输出] 预测 & 模型权重保存到 results_tsl_baselines\TimeMixer/

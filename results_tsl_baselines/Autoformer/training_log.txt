@@ -1,0 +1,16 @@
+[系统] 设备: cuda, 模型: Autoformer
+[划分] predictor=25189, rl_train=8396, rl_test=8398
+[滑窗] predictor_train=22584, val=2509, rl_train=8300, rl_test=8302
+[通道] 6 维 [POWER, WS, WD, TEMP, HUM, PRESSURE]
+[模型] Autoformer 参数量: 277,505
+
+───────────────────────────────────────────────────────
+ 训练 Autoformer (samples: 22584, val: 2509)
+───────────────────────────────────────────────────────
+  Epoch  10/100 | Train: 0.03171 | Val: 0.03391 | LR: 0.00500 | 耗时: 92.5s
+  Epoch  20/100 | Train: 0.01854 | Val: 0.01592 | LR: 0.00100 | 耗时: 184.9s
+  Epoch  30/100 | Train: 0.01528 | Val: 0.01326 | LR: 0.00020 | 耗时: 277.0s
+  早停于 Epoch 34, 最佳 Val: 0.008916, 耗时: 314.0s
+
+MAE=11583.6 kW, RMSE=15957.6 kW, R²=0.7576
+[输出] 预测 & 模型权重保存到 results_tsl_baselines\Autoformer/
